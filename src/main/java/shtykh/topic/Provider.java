@@ -1,5 +1,6 @@
 package shtykh.topic;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -7,8 +8,8 @@ import java.util.Set;
  */
 public interface Provider<T>{
 	Set<String> keySet();
-	T get(Object key);
-	void refresh();
+	T get(Object key) throws IOException;
+	void refresh() throws IOException;
 
 	boolean isEmpty();
 }
