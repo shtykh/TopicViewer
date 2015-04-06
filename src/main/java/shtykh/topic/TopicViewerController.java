@@ -21,6 +21,7 @@ import static shtykh.topic.util.Util.htmlPage;
 public class TopicViewerController {
 	private static final String ERROR_PAGE_REF = "errorpage";
 	private static final String TOPIC_PAGE_REF = "topic";
+	private static final String TOPIC_PARTITION_LIST = TOPIC_PAGE_REF + "/list";
 	private static String ROOT_DIR;
 
 	private Provider<Topic> topicProvider;
@@ -32,17 +33,21 @@ public class TopicViewerController {
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		Table table = new Table("Name", "Link");
+		Table table = new Table("Name", "Statistics", "Partitions list");
 		Set<String> keySet = topicProvider.keySet();
 		for (String topicName : keySet) {
-			String href;
+			String hrefStatistics;
+			String hrefList;
 			try {
 				String cleanName = encode(topicName, "UTF-8");
-				href = href(TOPIC_PAGE_REF + "?name=" + cleanName);
+				hrefStatistics = href(TOPIC_PAGE_REF + "?name=" + cleanName);
+				hrefList = href(TOPIC_PARTITION_LIST + "?name=" + cleanName);
 			} catch (Exception e) {
-				href = errorHref(e);
+				String error = errorHref(e);
+				hrefStatistics = error;
+				hrefList       = error;
 			}
-			table.addRow(topicName, href);
+			table.addRow(topicName, hrefStatistics, hrefList);
 		}
 		String body = keySet.isEmpty() ? "is empty" : table.html();
 		return htmlPage("Topics", "Topics:", body);
@@ -56,9 +61,12 @@ public class TopicViewerController {
 		return topic.toString();
 	}
 
-	public static void main(String[] args) throws Exception {
-		TopicViewerController.ROOT_DIR = args[0];
-		SpringApplication.run(TopicViewerController.class, args);
+	@RequestMapping(TOPIC_PARTITION_LIST)
+	@ResponseBody
+	public String topicListPage(
+			@RequestParam(value = "name") String name) throws IOException {
+		Topic topic = topicProvider.get(name);
+		return topic.getListPage();
 	}
 
 	@RequestMapping(ERROR_PAGE_REF)
@@ -66,6 +74,11 @@ public class TopicViewerController {
 	public String errorPage(
 			@RequestParam(value = "msg") String msg) {
 		return htmlPage("Error", msg);
+	}
+
+	public static void main(String[] args) throws Exception {
+		TopicViewerController.ROOT_DIR = args[0];
+		SpringApplication.run(TopicViewerController.class, args);
 	}
 
 	private static String errorHref(Exception ex) {

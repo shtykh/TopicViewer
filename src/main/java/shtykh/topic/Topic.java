@@ -20,19 +20,12 @@ public class Topic {
 	private double avg = 0;
 	private long sum = 0;
 
-	public Topic() {
-	}
-
 	public Topic(String name, String timeStamp) {
 		this.name = name;
 		this.timeStamp = timeStamp;
 		data = new ArrayList<>();
 	}
-
-	public String getName() {
-		return name;
-	}
-
+	
 	@Override
 	public String toString() {
 		Table table = new Table();
@@ -55,5 +48,17 @@ public class Topic {
 		avg = (avg * data.size() + messageNumber) / (data.size() + 1);
 		data.add(new Pair<>(partitionNumber, messageNumber));
 		sum = sum + messageNumber;
+	}
+
+	public String getListPage() {
+		if (data == null || data.isEmpty()) {
+			return Util.htmlPage("Topic '" + name + "'. Partitions.", "There is no partitions.");
+		} else {
+			Table table = new Table("Partition number", "Messages number");
+			for (Pair<Integer, Long> pair : data) {
+				table.addRow(String.valueOf(pair.getKey()), String.valueOf(pair.getValue()));
+			}
+			return Util.htmlPage("Topic '" + name + "'. Partitions.", table.html());
+		}
 	}
 }
