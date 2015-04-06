@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import shtykh.topic.util.Table;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import static java.net.URLEncoder.encode;
 import static shtykh.topic.util.Util.href;
@@ -21,30 +20,28 @@ public class TopicViewerController {
 	private static final String ERROR_PAGE_REF = "errorpage";
 	private static final String TOPIC_PAGE_REF = "topic";
 
-	private Map<String, Topic> topics;
-	private TopicManager topicManager;
+	private Provider<Topic> topicProvider;
 
 	public TopicViewerController() {
-		topicManager = new TopicMock(); // TODO injection
-		topics = topicManager.get();
+		topicProvider = new TopicsMock();
 	}
 
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		topics = topicManager.refresh(topics);
 		Table table = new Table("Name", "Link");
-		for (Topic topic : topics.values()) {
+		for (String topicName : topicProvider.keySet()) {
+			Topic topic = topicProvider.get(topicName);
 			String href;
 			try {
-				String cleanName = encode(topic.getName(), "UTF-8");
+				String cleanName = encode(topicName, "UTF-8");
 				href = href(TOPIC_PAGE_REF + "?name=" + cleanName);
 			} catch (Exception e) {
 				href = errorHref(e);
 			}
-			table.addRow(topic.getName(), href);
+			table.addRow(topicName, href);
 		}
-		String body = topics.isEmpty() ? "is empty" : table.html();
+		String body = topicProvider.isEmpty() ? "is empty" : table.html();
 		return htmlPage("Topics", "Topics:", body);
 	}
 
@@ -52,14 +49,14 @@ public class TopicViewerController {
 	@ResponseBody
 	public String topicPage(
 			@RequestParam(value = "name") String name) {
-		Topic topic = topics.get(name);
+		Topic topic = topicProvider.get(name);
 		return topic.toString();
 	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(TopicViewerController.class, args);
 	}
-	
+
 	@RequestMapping(ERROR_PAGE_REF)
 	@ResponseBody
 	public String errorPage(

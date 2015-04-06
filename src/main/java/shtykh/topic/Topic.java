@@ -1,20 +1,30 @@
 package shtykh.topic;
 
+import javafx.util.Pair;
 import shtykh.topic.util.Table;
 import shtykh.topic.util.Util;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * Created by shtykh on 03/04/15.
  */
 public class Topic {
 	private String name;
-	private Date last;
+	private String timeStamp;
+	
+	private List<Pair<Integer, Long>> data;
+	private long summ;
+	private long max;
+	private long min;
+	private long avg;
 
-	public Topic(String name, Date last) {
+	public Topic() {
+	}
+
+	public Topic(String name, String timeStamp) {
 		this.name = name;
-		this.last = last;
+		this.timeStamp = timeStamp;
 	}
 
 	public String getName() {
@@ -25,11 +35,11 @@ public class Topic {
 	public String toString() {
 		Table table = new Table();
 		table.addRow("Name", "Last");
-		table.addRow(name, String.valueOf(last));
+		table.addRow(name, String.valueOf(timeStamp));
 		return Util.htmlPage("Topic", table.html());
 	}
 
-	public Date getLast() {
-		return last;
+	public String getTimeStamp() {
+		return timeStamp;
 	}
 }
