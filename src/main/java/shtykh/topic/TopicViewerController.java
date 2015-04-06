@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import shtykh.topic.util.Table;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 
+import static java.net.URLEncoder.encode;
 import static shtykh.topic.util.Util.href;
 import static shtykh.topic.util.Util.htmlPage;
 
@@ -37,7 +37,7 @@ public class TopicViewerController {
 		for (Topic topic : topics.values()) {
 			String href;
 			try {
-				String cleanName = URLEncoder.encode(topic.getName(), "UTF-8");
+				String cleanName = encode(topic.getName(), "UTF-8");
 				href = href(TOPIC_PAGE_REF + "?name=" + cleanName);
 			} catch (Exception e) {
 				href = errorHref(e);
@@ -70,7 +70,7 @@ public class TopicViewerController {
 	private static String errorHref(Exception ex) {
 		String message = null;
 		try {
-			message = URLEncoder.encode(ex.getMessage(), "UTF-8");
+			message = encode(ex.getMessage(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			message = "UTF8_IS_NOT_SUPPORTED";
 		}

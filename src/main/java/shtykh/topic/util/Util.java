@@ -10,12 +10,14 @@ public class Util {
 	private Util(){};
 
 	public static String href(String suffix) {
-		String href = "http://" + host + ":" + port + "/" + suffix;
-		return "<a href="+ href + ">" + href + "</a>";
+		return href(suffix, null);
 	}
 
 	public static String href(String suffix, String name) {
 		String href = "http://" + host + ":" + port + "/" + suffix;
+		if (name == null) {
+			name = href;
+		}
 		return "<a href="+ href + ">" + name + "</a>";
 	}
 

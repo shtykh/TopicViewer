@@ -15,6 +15,7 @@ public class TopicMock implements TopicManager {
 		topics.put("now0", new Topic("now0", new Date()));
 		topics.put("now1", new Topic("now1", new Date()));
 		topics.put("long ago", new Topic("long ago", new Date(23434L)));
+		topics.put("©∫çΩ", new Topic("©∫çΩ", new Date(-23434L)));
 	}
 
 	@Override
