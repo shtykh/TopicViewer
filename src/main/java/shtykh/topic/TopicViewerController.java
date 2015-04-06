@@ -10,6 +10,7 @@ import shtykh.topic.util.Table;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 import static java.net.URLEncoder.encode;
 import static shtykh.topic.util.Util.href;
@@ -32,12 +33,8 @@ public class TopicViewerController {
 	@ResponseBody
 	String home() {
 		Table table = new Table("Name", "Link");
-		try {
-			topicProvider.refresh();
-		} catch (IOException e) {
-			errorPage(e.getMessage());
-		}
-		for (String topicName : topicProvider.keySet()) {
+		Set<String> keySet = topicProvider.keySet();
+		for (String topicName : keySet) {
 			String href;
 			try {
 				String cleanName = encode(topicName, "UTF-8");
@@ -47,7 +44,7 @@ public class TopicViewerController {
 			}
 			table.addRow(topicName, href);
 		}
-		String body = topicProvider.isEmpty() ? "is empty" : table.html();
+		String body = keySet.isEmpty() ? "is empty" : table.html();
 		return htmlPage("Topics", "Topics:", body);
 	}
 

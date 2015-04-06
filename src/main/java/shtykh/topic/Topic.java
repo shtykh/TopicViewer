@@ -42,7 +42,7 @@ public class Topic {
 		table.addRow("Max", String.valueOf(max));
 		table.addRow("Avg", String.valueOf(avg));
 		table.addRow("Sum", String.valueOf(sum));
-		return Util.htmlPage("Topic " + name + ". Statistics.", table.html());
+		return Util.htmlPage("Topic '" + name + "'. Statistics.", table.html());
 	}
 
 	public String getTimeStamp() {
