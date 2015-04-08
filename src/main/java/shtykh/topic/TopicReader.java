@@ -18,7 +18,8 @@ public class TopicReader implements Provider<Topic> {
 	private Map<String, Topic> cache;
 	private Set<String> keySet;
 
-	public TopicReader() throws Exception {
+	@Override
+	public void init() throws Exception {
 		cache = new ConcurrentHashMap<>();
 		keySet = new HashSet<>();
 		this.rootDir = new File(ROOT_DIR);

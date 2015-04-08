@@ -12,4 +12,8 @@ public class TopicsMock extends HashMap<String, Topic> implements Provider<Topic
 		put("long ago", new Topic("long ago", "1215-04-06-13-02-22"));
 		put("©∫çΩ", new Topic("©∫çΩ", "8815-04-06-13-02-22"));
 	}
+
+	@Override
+	public void init() throws Exception {
+	}
 }

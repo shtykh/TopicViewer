@@ -1,13 +1,18 @@
 package shtykh.topic.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * Created by shtykh on 03/04/15.
  */
 public class HtmlHelper {
-	private final String host = "localhost";
-	private final String port = "8080";
+	private String host;
+	private String port;
 
-	public HtmlHelper() {
+	@Autowired
+	public HtmlHelper(String host, String port) {
+		this.host = "localhost";//host; //todo use loader
+		this.port = "8080";//port;
 	}
 
 	public String href(String suffix) {

@@ -2,10 +2,7 @@ package shtykh.topic;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,21 +16,33 @@ import java.util.Set;
 import static java.net.URLEncoder.encode;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
-@EnableAutoConfiguration
-@Controller 
+@Controller
+@EnableAutoConfiguration // todo not enable it
 public class TopicViewerController {
 	private static Logger log = Logger.getLogger(TopicViewerController.class);
-
 	private String INITIALISATION_ERROR_PAGE = null;
+	
 	private final String errorPageRef = "errorPageRef";
-	private final String topicPageRef = "topicPageRef";
-	private final String topicPartitionList = "topicPartitionList";
-	
-	@Autowired
+	private final String topicPageRef = "topic/stat";
+	private final String topicPartitionList = "topic/list";
+
 	private HtmlHelper htmlHelper;
-	
+	private Provider<Topic> provider;
+
 	@Autowired
-	private TopicReader provider;
+	public TopicViewerController(Provider<Topic> provider, HtmlHelper htmlHelper) {
+		this.provider = provider;
+		this.htmlHelper = htmlHelper;
+		init();
+	}
+
+	public void init() {
+		try {
+			provider.init();
+		} catch (Exception e) {
+			INITIALISATION_ERROR_PAGE = e.getMessage();
+		}
+	}
 
 	@RequestMapping("/")
 	@ResponseBody
@@ -111,16 +120,5 @@ public class TopicViewerController {
 			message = "UTF8_IS_NOT_SUPPORTED";
 		}
 		return htmlHelper.href(errorPageRef + "?msg=" + message, "Error! (see error page)");
-	}
-
-	public static void main(String[] args) throws Exception {
-		TopicReader.ROOT_DIR = args[0];
-		Object[] classes = new Object[]{
-				HtmlHelper.class,
-				TopicViewerController.class,
-				TopicReader.class};
-		ResourceLoader resourceLoader = new FileSystemXmlApplicationContext("/src/main/resources/applicationContext.xml");
-		SpringApplication app = new SpringApplication(resourceLoader, classes);
-		app.run(args);
 	}
 }

@@ -12,7 +12,7 @@ public class Table {
 	private List<List<String>> contents;
 
 	public Table(String... hat) {
-		contents = new ArrayList<List<String>>();
+		contents = new ArrayList<>();
 		if (hat.length != 0) {
 			addRow(hat);
 		}
