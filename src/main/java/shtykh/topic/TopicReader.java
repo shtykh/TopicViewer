@@ -17,10 +17,10 @@ public class TopicReader implements Provider<Topic> {
 	private Map<String, Topic> cache;
 	private Set<String> keySet;
 
-	public TopicReader(String rootDirPath) {
+	public TopicReader(String rootDirPath) throws Exception {
 		this.rootDir = new File(rootDirPath);
 		if (!rootDir.isDirectory()) {
-			throw new RuntimeException(rootDirPath + " is not a directory");
+			throw new Exception(rootDirPath + " is not a directory");
 		}
 		cache = new ConcurrentHashMap<>();
 		keySet = new HashSet<>();
@@ -30,7 +30,8 @@ public class TopicReader implements Provider<Topic> {
 		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));
 	}
 
-	private File getTheLastFile(File directory) {
+	private File getTheLastTimestampDir(String topicName) {
+		File directory = getTopicDir(topicName);
 		if (!directory.isDirectory()) {
 			return null;
 		}
@@ -55,32 +56,39 @@ public class TopicReader implements Provider<Topic> {
 	}
 
 	@Override
-	public Topic get(Object key) throws IOException {
-		File lastFile = getTheLastFile(getTopicDir((String) key));
-		if (lastFile == null) {
-			cache.remove(key);
+	public Topic get(Object key) throws Exception {
+		String topicName = (String) key;
+		File lastTimestampDir = getTheLastTimestampDir(topicName);
+		if (lastTimestampDir == null) {
+			cache.remove(topicName);
 			return null;
 		} else {
-			Topic topic = cache.get(key);
-			if (topic == null || !topic.getTimeStamp().equals(lastFile.getName())) {
-				refreshTopic((String) key, lastFile);
+			Topic topic = cache.get(topicName);
+			if (topic == null || !topic.getTimeStamp().equals(lastTimestampDir.getName())) {
+				refreshTopic(topicName, lastTimestampDir);
 			}
-			return cache.get(key);
+			return cache.get(topicName);
 		}
 	}
 
-	private void refreshTopic(String topicName, File timestampFile) throws IOException {
+	private void refreshTopic(String topicName, File timestampFile) throws TopicReaderException {
 		File file = new File(timestampFile.getAbsolutePath().concat("/offsets.csv"));
 		cache.put(topicName, readFromFile(topicName, timestampFile.getName(), file));
 	}
 
-	private Topic readFromFile(String name, String timestamp, File file) throws IOException {
+	private Topic readFromFile(String name, String timestamp, File file) throws TopicReaderException {
 		Topic topic = new Topic(name, timestamp);
-		CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
-		reader.forEach((record)->topic.addPartition(
-											Integer.decode(record.get(0)),
-											Long.   decode(record.get(1))));
-		cache.put(name, topic);
-		return topic;
+		try {
+			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
+			reader.forEach((record)->topic.addPartition(
+						Integer.decode(record.get(0)),
+						Long.   decode(record.get(1))));
+			cache.put(name, topic);
+			return topic;
+		} catch (IOException e) {
+			throw new TopicReaderException("IOException in file: " + file.getAbsolutePath(), e);
+		} catch (NumberFormatException e) {
+			throw new TopicReaderException("Invalid csv file: " + file.getAbsolutePath(), e);
+		}
 	}
 }

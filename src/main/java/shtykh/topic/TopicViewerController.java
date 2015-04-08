@@ -1,5 +1,7 @@
 package shtykh.topic;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
@@ -7,32 +9,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import shtykh.topic.util.Table;
+import shtykh.topic.util.Util;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 import static java.net.URLEncoder.encode;
-import static shtykh.topic.util.Util.href;
 import static shtykh.topic.util.Util.htmlPage;
 
 @Controller
 @EnableAutoConfiguration
 public class TopicViewerController {
-	private static final String ERROR_PAGE_REF = "errorpage";
-	private static final String TOPIC_PAGE_REF = "topic";
-	private static final String TOPIC_PARTITION_LIST = TOPIC_PAGE_REF + "/list";
-	private static String ROOT_DIR;
+	private static Logger log = Logger.getLogger(TopicViewerController.class);
+	private String INITIALISATION_ERROR_PAGE = null;
 
+	private final String errorPageRef = "errorPageRef";
+	private final String topicPageRef = "topic/stat";
+	private final String topicPartitionList = "topic/list";
+	
+	@Autowired
+	private Util util;
+	
 	private Provider<Topic> topicProvider;
 
+	private static String ROOT_DIR;
+
 	public TopicViewerController() {
-		topicProvider = new TopicReader(ROOT_DIR);
+		try {
+			topicProvider = new TopicReader(ROOT_DIR);
+		} catch (Exception e) {
+			INITIALISATION_ERROR_PAGE = errorPage(e.getMessage());
+		}
 	}
 
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
+		if (INITIALISATION_ERROR_PAGE != null) {
+			return INITIALISATION_ERROR_PAGE;
+		}
 		Table table = new Table("Name", "Statistics", "Partitions list");
 		Set<String> keySet = topicProvider.keySet();
 		for (String topicName : keySet) {
@@ -40,8 +55,8 @@ public class TopicViewerController {
 			String hrefList;
 			try {
 				String cleanName = encode(topicName, "UTF-8");
-				hrefStatistics = href(TOPIC_PAGE_REF + "?name=" + cleanName);
-				hrefList = href(TOPIC_PARTITION_LIST + "?name=" + cleanName);
+				hrefStatistics = util.href(topicPageRef + "?name=" + cleanName);
+				hrefList = util.href(topicPartitionList + "?name=" + cleanName);
 			} catch (Exception e) {
 				String error = errorHref(e);
 				hrefStatistics = error;
@@ -53,41 +68,64 @@ public class TopicViewerController {
 		return htmlPage("Topics", "Topics:", body);
 	}
 
-	@RequestMapping(TOPIC_PAGE_REF)
+	@RequestMapping(topicPageRef)
 	@ResponseBody
 	public String topicPage(
-			@RequestParam(value = "name") String name) throws IOException {
-		Topic topic = topicProvider.get(name);
-		return topic.toString();
+			@RequestParam(value = "name") String name) {
+		if (INITIALISATION_ERROR_PAGE != null) {
+			return INITIALISATION_ERROR_PAGE;
+		}
+		try {
+			Topic topic = topicProvider.get(name);
+			return topic.getStatisticsPage();
+		} catch (Exception e) {
+			return errorPage(e.getMessage());
+		}
 	}
 
-	@RequestMapping(TOPIC_PARTITION_LIST)
+	@RequestMapping(topicPartitionList)
 	@ResponseBody
 	public String topicListPage(
-			@RequestParam(value = "name") String name) throws IOException {
-		Topic topic = topicProvider.get(name);
-		return topic.getListPage();
+			@RequestParam(value = "name") String name) {
+		if (INITIALISATION_ERROR_PAGE != null) {
+			return INITIALISATION_ERROR_PAGE;
+		}
+		try {
+			Topic topic = topicProvider.get(name);
+			return topic.getListPage();
+		} catch (Exception e) {
+			return errorPage(e.getMessage());
+		}
 	}
 
-	@RequestMapping(ERROR_PAGE_REF)
+	@RequestMapping(errorPageRef)
 	@ResponseBody
 	public String errorPage(
 			@RequestParam(value = "msg") String msg) {
 		return htmlPage("Error", msg);
 	}
 
-	public static void main(String[] args) throws Exception {
-		TopicViewerController.ROOT_DIR = args[0];
-		SpringApplication.run(TopicViewerController.class, args);
-	}
-
-	private static String errorHref(Exception ex) {
-		String message = null;
+	private String errorHref(Exception ex) {
+		log.error(ex.getMessage());
+		if (INITIALISATION_ERROR_PAGE != null) {
+			return INITIALISATION_ERROR_PAGE;
+		}
+		String message;
 		try {
 			message = encode(ex.getMessage(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException unsupportedEncodingEx) {
+			log.error(unsupportedEncodingEx.getMessage());
 			message = "UTF8_IS_NOT_SUPPORTED";
 		}
-		return href(ERROR_PAGE_REF + "?msg=" + message, "Error! (see error page)");
+		return util.href(errorPageRef + "?msg=" + message, "Error! (see error page)");
+	}
+
+	public static void main(String[] args) throws Exception {
+		TopicViewerController.ROOT_DIR = args[0];
+		Object[] classes = new Object[]{
+				Util.class,
+				TopicViewerController.class};
+		SpringApplication app = new SpringApplication(classes);
+		app.run(args);
 	}
 }

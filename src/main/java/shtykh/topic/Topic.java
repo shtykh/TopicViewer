@@ -25,18 +25,6 @@ public class Topic {
 		this.timeStamp = timeStamp;
 		data = new ArrayList<>();
 	}
-	
-	@Override
-	public String toString() {
-		Table table = new Table();
-		table.addRow("Name", name);
-		table.addRow("Last run", timeStamp);
-		table.addRow("Min", String.valueOf(min));
-		table.addRow("Max", String.valueOf(max));
-		table.addRow("Avg", String.valueOf(avg));
-		table.addRow("Sum", String.valueOf(sum));
-		return Util.htmlPage("Topic '" + name + "'. Statistics.", table.html());
-	}
 
 	public String getTimeStamp() {
 		return timeStamp;
@@ -60,5 +48,16 @@ public class Topic {
 			}
 			return Util.htmlPage("Topic '" + name + "'. Partitions.", table.html());
 		}
+	}
+
+	public String getStatisticsPage() {
+		Table table = new Table();
+		table.addRow("Name", name);
+		table.addRow("Last run", timeStamp);
+		table.addRow("Min", String.valueOf(min));
+		table.addRow("Max", String.valueOf(max));
+		table.addRow("Avg", String.valueOf(avg));
+		table.addRow("Sum", String.valueOf(sum));
+		return Util.htmlPage("Topic '" + name + "'. Statistics.", table.html());
 	}
 }
