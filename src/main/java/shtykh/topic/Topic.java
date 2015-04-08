@@ -2,7 +2,7 @@ package shtykh.topic;
 
 import javafx.util.Pair;
 import shtykh.topic.util.Table;
-import shtykh.topic.util.Util;
+import shtykh.topic.util.HtmlHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +40,13 @@ public class Topic {
 
 	public String getListPage() {
 		if (data == null || data.isEmpty()) {
-			return Util.htmlPage("Topic '" + name + "'. Partitions.", "There is no partitions.");
+			return HtmlHelper.htmlPage("Topic '" + name + "'. Partitions.", "There is no partitions.");
 		} else {
 			Table table = new Table("Partition number", "Messages number");
 			for (Pair<Integer, Long> pair : data) {
 				table.addRow(String.valueOf(pair.getKey()), String.valueOf(pair.getValue()));
 			}
-			return Util.htmlPage("Topic '" + name + "'. Partitions.", table.html());
+			return HtmlHelper.htmlPage("Topic '" + name + "'. Partitions.", table.html());
 		}
 	}
 
@@ -58,6 +58,6 @@ public class Topic {
 		table.addRow("Max", String.valueOf(max));
 		table.addRow("Avg", String.valueOf(avg));
 		table.addRow("Sum", String.valueOf(sum));
-		return Util.htmlPage("Topic '" + name + "'. Statistics.", table.html());
+		return HtmlHelper.htmlPage("Topic '" + name + "'. Statistics.", table.html());
 	}
 }

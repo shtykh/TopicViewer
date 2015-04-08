@@ -13,18 +13,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by shtykh on 06/04/15.
  */
 public class TopicReader implements Provider<Topic> {
-	private final File rootDir;
+	public static String ROOT_DIR;
+	private File rootDir;
 	private Map<String, Topic> cache;
 	private Set<String> keySet;
 
-	public TopicReader(String rootDirPath) throws Exception {
-		this.rootDir = new File(rootDirPath);
-		if (!rootDir.isDirectory()) {
-			throw new Exception(rootDirPath + " is not a directory");
-		}
+	public TopicReader() throws Exception {
 		cache = new ConcurrentHashMap<>();
 		keySet = new HashSet<>();
+		this.rootDir = new File(ROOT_DIR);
+		if (!rootDir.isDirectory()) {
+			throw new Exception(ROOT_DIR + " is not a directory");
+		}
 	}
+	
 
 	private File getTopicDir(String topicName) {
 		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));

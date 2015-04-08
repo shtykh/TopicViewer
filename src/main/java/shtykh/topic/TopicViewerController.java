@@ -4,43 +4,36 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import shtykh.topic.util.HtmlHelper;
 import shtykh.topic.util.Table;
-import shtykh.topic.util.Util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 import static java.net.URLEncoder.encode;
-import static shtykh.topic.util.Util.htmlPage;
+import static shtykh.topic.util.HtmlHelper.htmlPage;
 
-@Controller
 @EnableAutoConfiguration
+@Controller 
 public class TopicViewerController {
 	private static Logger log = Logger.getLogger(TopicViewerController.class);
-	private String INITIALISATION_ERROR_PAGE = null;
 
+	private String INITIALISATION_ERROR_PAGE = null;
 	private final String errorPageRef = "errorPageRef";
-	private final String topicPageRef = "topic/stat";
-	private final String topicPartitionList = "topic/list";
+	private final String topicPageRef = "topicPageRef";
+	private final String topicPartitionList = "topicPartitionList";
 	
 	@Autowired
-	private Util util;
+	private HtmlHelper htmlHelper;
 	
-	private Provider<Topic> topicProvider;
-
-	private static String ROOT_DIR;
-
-	public TopicViewerController() {
-		try {
-			topicProvider = new TopicReader(ROOT_DIR);
-		} catch (Exception e) {
-			INITIALISATION_ERROR_PAGE = errorPage(e.getMessage());
-		}
-	}
+	@Autowired
+	private TopicReader provider;
 
 	@RequestMapping("/")
 	@ResponseBody
@@ -49,14 +42,14 @@ public class TopicViewerController {
 			return INITIALISATION_ERROR_PAGE;
 		}
 		Table table = new Table("Name", "Statistics", "Partitions list");
-		Set<String> keySet = topicProvider.keySet();
+		Set<String> keySet = provider.keySet();
 		for (String topicName : keySet) {
 			String hrefStatistics;
 			String hrefList;
 			try {
 				String cleanName = encode(topicName, "UTF-8");
-				hrefStatistics = util.href(topicPageRef + "?name=" + cleanName);
-				hrefList = util.href(topicPartitionList + "?name=" + cleanName);
+				hrefStatistics = htmlHelper.href(topicPageRef + "?name=" + cleanName);
+				hrefList = htmlHelper.href(topicPartitionList + "?name=" + cleanName);
 			} catch (Exception e) {
 				String error = errorHref(e);
 				hrefStatistics = error;
@@ -76,7 +69,7 @@ public class TopicViewerController {
 			return INITIALISATION_ERROR_PAGE;
 		}
 		try {
-			Topic topic = topicProvider.get(name);
+			Topic topic = provider.get(name);
 			return topic.getStatisticsPage();
 		} catch (Exception e) {
 			return errorPage(e.getMessage());
@@ -91,7 +84,7 @@ public class TopicViewerController {
 			return INITIALISATION_ERROR_PAGE;
 		}
 		try {
-			Topic topic = topicProvider.get(name);
+			Topic topic = provider.get(name);
 			return topic.getListPage();
 		} catch (Exception e) {
 			return errorPage(e.getMessage());
@@ -117,15 +110,17 @@ public class TopicViewerController {
 			log.error(unsupportedEncodingEx.getMessage());
 			message = "UTF8_IS_NOT_SUPPORTED";
 		}
-		return util.href(errorPageRef + "?msg=" + message, "Error! (see error page)");
+		return htmlHelper.href(errorPageRef + "?msg=" + message, "Error! (see error page)");
 	}
 
 	public static void main(String[] args) throws Exception {
-		TopicViewerController.ROOT_DIR = args[0];
+		TopicReader.ROOT_DIR = args[0];
 		Object[] classes = new Object[]{
-				Util.class,
-				TopicViewerController.class};
-		SpringApplication app = new SpringApplication(classes);
+				HtmlHelper.class,
+				TopicViewerController.class,
+				TopicReader.class};
+		ResourceLoader resourceLoader = new FileSystemXmlApplicationContext("/src/main/resources/applicationContext.xml");
+		SpringApplication app = new SpringApplication(resourceLoader, classes);
 		app.run(args);
 	}
 }

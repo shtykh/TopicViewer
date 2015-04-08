@@ -3,9 +3,12 @@ package shtykh.topic.util;
 /**
  * Created by shtykh on 03/04/15.
  */
-public class Util {
-	private String host = "localhost";
-	private String port = "8080";
+public class HtmlHelper {
+	private final String host = "localhost";
+	private final String port = "8080";
+
+	public HtmlHelper() {
+	}
 
 	public String href(String suffix) {
 		return href(suffix, null);
