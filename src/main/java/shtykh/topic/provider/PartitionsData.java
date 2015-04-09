@@ -40,21 +40,13 @@ public class PartitionsData extends FieldPrinter implements RowPrinter  {
 		return data.isEmpty();
 	}
 
-	public class Partition {
+	static class Partition {
 		private final int number;
 		private final long messages;
 
 		Partition(int number, long messages) {
 			this.number = number;
 			this.messages = messages;
-		}
-
-		public int getNumber() {
-			return number;
-		}
-
-		public long getMessages() {
-			return messages;
 		}
 
 		public String[] toStringRow() {
