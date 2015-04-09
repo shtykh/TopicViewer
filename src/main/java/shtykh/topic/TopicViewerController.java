@@ -18,7 +18,6 @@ import static java.net.URLEncoder.encode;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
 @Controller
-@EnableAutoConfiguration
 public class TopicViewerController {
 	private static Logger log = Logger.getLogger(TopicViewerController.class);
 	private String INITIALISATION_ERROR_PAGE = null;

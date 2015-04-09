@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by shtykh on 06/04/15.
@@ -16,35 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TopicReader implements Provider<Topic> {
 	public static String ROOT_DIR;
 	private File rootDir;
-	private Map<String, Topic> cache;
 	private Set<String> keySet;
 
 	@Override
 	public void init() throws Exception {
-		cache = new ConcurrentHashMap<>();
 		keySet = new HashSet<>();
 		this.rootDir = new File(ROOT_DIR);
 		if (!rootDir.isDirectory()) {
 			throw new Exception(ROOT_DIR + " is not a directory");
-		}
-	}
-	
-
-	private File getTopicDir(String topicName) {
-		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));
-	}
-
-	private File getTheLastTimestampDir(String topicName) {
-		File directory = getTopicDir(topicName);
-		if (!directory.isDirectory()) {
-			return null;
-		}
-		File[] timestampFiles = directory.listFiles();
-		if (timestampFiles == null || timestampFiles.length <= 0) {
-			return null;
-		} else {
-			Arrays.sort(timestampFiles, Comparator.<File>reverseOrder());
-			return timestampFiles[0];
 		}
 	}
 
@@ -63,21 +41,26 @@ public class TopicReader implements Provider<Topic> {
 	public Topic get(Object key) throws Exception {
 		String topicName = (String) key;
 		File lastTimestampDir = getTheLastTimestampDir(topicName);
-		if (lastTimestampDir == null) {
-			cache.remove(topicName);
+		return readTopic(topicName, lastTimestampDir);
+	}
+
+	protected File getTheLastTimestampDir(String topicName) {
+		File[] timestampFiles = getTopicDir(topicName).listFiles();
+		if (timestampFiles == null) {
 			return null;
 		} else {
-			Topic topic = cache.get(topicName);
-			if (topic == null || !topic.getTimeStamp().equals(lastTimestampDir.getName())) {
-				refreshTopic(topicName, lastTimestampDir);
-			}
-			return cache.get(topicName);
+			Arrays.sort(timestampFiles, Comparator.<File>reverseOrder());
+			return timestampFiles[0];
 		}
 	}
 
-	private void refreshTopic(String topicName, File timestampFile) throws TopicReaderException {
+	protected Topic readTopic(String topicName, File timestampFile) throws TopicReaderException {
 		File file = new File(timestampFile.getAbsolutePath().concat("/offsets.csv"));
-		cache.put(topicName, readFromFile(topicName, timestampFile.getName(), file));
+		return readFromFile(topicName, timestampFile.getName(), file);
+	}
+
+	private File getTopicDir(String topicName) {
+		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));
 	}
 
 	private Topic readFromFile(String name, String timestamp, File file) throws TopicReaderException {
@@ -88,7 +71,6 @@ public class TopicReader implements Provider<Topic> {
 			reader.forEach((record)->data.addPartition(
 						Integer.decode(record.get(0)),
 						Long.   decode(record.get(1))));
-			cache.put(name, topic);
 			return topic;
 		} catch (IOException e) {
 			throw new TopicReaderException("IOException in file: " + file.getAbsolutePath(), e);
