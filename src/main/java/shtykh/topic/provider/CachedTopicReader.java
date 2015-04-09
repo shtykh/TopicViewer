@@ -13,14 +13,13 @@ public class CachedTopicReader extends TopicReader {
 	private Map<String, Topic> cache;
 
 	@Override
-	public void init() throws Exception {
+	public void init() throws ProviderException {
 		super.init();
 		cache = new ConcurrentHashMap<>();
 	}
 
 	@Override
-	public Topic get(Object key) throws Exception {
-		String topicName = (String) key;
+	public Topic get(String topicName) throws ProviderException {
 		File lastTimestampDir = getTheLastTimestampDir(topicName);
 		if (lastTimestampDir == null) {
 			cache.remove(topicName);

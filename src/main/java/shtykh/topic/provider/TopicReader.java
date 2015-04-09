@@ -13,35 +13,28 @@ import java.util.*;
 /**
  * Created by shtykh on 06/04/15.
  */
-public class TopicReader implements Provider<Topic> {
+public class TopicReader implements Provider<String, Topic> {
 	public static String rootDirPath;
 	
 	private File rootDir;
-	private Set<String> keySet;
 
 	@Override
-	public void init() throws Exception {
-		keySet = new HashSet<>();
+	public void init() throws ProviderException {
 		this.rootDir = new File(rootDirPath);
 		if (!rootDir.isDirectory()) {
-			throw new TopicReaderException(rootDirPath + " is not a directory");
+			throw new ProviderException(rootDirPath + " is not a directory");
 		}
 	}
 
 	@Override
-	public Set<String> keySet() {
-		keySet.clear();
-		if(rootDir.listFiles() != null) {
-			for (File file : rootDir.listFiles()) {
-				keySet.add(file.getName());
-			}
-		}
-		return keySet;
+	public String[] keys() {
+		return Arrays.stream(rootDir.listFiles())
+				.map(file -> file.getName())
+				.toArray(String[]::new);
 	}
 
 	@Override
-	public Topic get(Object key) throws Exception {
-		String topicName = (String) key;
+	public Topic get(String topicName) throws ProviderException {
 		File lastTimestampDir = getTheLastTimestampDir(topicName);
 		return readTopic(topicName, lastTimestampDir);
 	}
@@ -57,7 +50,7 @@ public class TopicReader implements Provider<Topic> {
 		}
 	}
 
-	protected Topic readTopic(String topicName, File timestampFile) throws TopicReaderException {
+	protected Topic readTopic(String topicName, File timestampFile) throws ProviderException {
 		File file = new File(timestampFile.getAbsolutePath().concat("/offsets.csv"));
 		return readFromFile(topicName, timestampFile.getName(), file);
 	}
@@ -66,7 +59,7 @@ public class TopicReader implements Provider<Topic> {
 		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));
 	}
 
-	private Topic readFromFile(String name, String timestamp, File file) throws TopicReaderException {
+	private Topic readFromFile(String name, String timestamp, File file) throws ProviderException {
 		try {
 			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
 			PartitionsData data = new PartitionsData();
@@ -76,7 +69,7 @@ public class TopicReader implements Provider<Topic> {
 						Long.   decode(record.get(1).trim())));
 			return topic;
 		} catch (IOException | NumberFormatException e) {
-			throw new TopicReaderException(e.getClass().getSimpleName() + " in file: " + file.getAbsolutePath(), e);
+			throw new ProviderException(e.getClass().getSimpleName() + " in file: " + file.getAbsolutePath(), e);
 		}
 	}
 }

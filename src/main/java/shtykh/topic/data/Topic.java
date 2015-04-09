@@ -2,6 +2,7 @@ package shtykh.topic.data;
 
 import shtykh.topic.util.printer.FieldPrinter;
 import shtykh.topic.util.TableBuilder;
+import shtykh.topic.util.printer.PrinterException;
 
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
@@ -33,7 +34,7 @@ public class Topic extends FieldPrinter {
 		return htmlPage("Topic '" + name + "'. Partitions.", body);
 	}
 
-	public String getStatisticsPage() throws Exception {
+	public String getStatisticsPage() throws PrinterException {
 		return htmlPage("Topic '" + name + "'. Statistics.", 
 				getRowTable().buildHtml());
 	}

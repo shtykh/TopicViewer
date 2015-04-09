@@ -31,12 +31,12 @@ public class TableBuilder {
 	public String buildHtml() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<table border=" + BORDER + ">");
-		for (int i = 0; i < contents.size(); i++) {
-			String[] row = contents.get(i);
+		for (int rowNumber = 0; rowNumber < contents.size(); rowNumber++) {
+			String[] row = contents.get(rowNumber);
 			sb.append("<tr>");
-			for (int j = 0; j < contents.get(i).length; j++) {
+			for (int columnNumber = 0; columnNumber < row.length; columnNumber++) {
 				sb.append("<td>");
-				sb.append(row[j]);
+				sb.append(row[columnNumber]);
 				sb.append("</td>");
 			}
 			sb.append("</tr>");

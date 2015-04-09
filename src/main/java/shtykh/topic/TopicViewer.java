@@ -13,7 +13,6 @@ import shtykh.topic.util.TableBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Set;
 
 import static shtykh.topic.util.HtmlHelper.href;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
@@ -35,16 +34,17 @@ public class TopicViewer {
 	private String initialisationErrorPage = null;
 
 	private HtmlHelper htmlHelper;
-	private Provider<Topic> provider;
+	private Provider<String, Topic> provider;
 
 	@Autowired
-	public TopicViewer(Provider<Topic> provider) {
+	public TopicViewer(Provider<String, Topic> provider) {
 		this.provider = provider;
 		this.htmlHelper = new HtmlHelper(SCHEME, HOST, PORT);
 		try {
 			provider.init();
 		} catch (Exception e) {
 			initialisationErrorPage = e.getMessage();
+			log.error(initialisationErrorPage);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class TopicViewer {
 			return initialisationErrorPage;
 		}
 		TableBuilder tableBuilder = new TableBuilder("Name", "Statistics", "Partitions list");
-		Set<String> keySet = provider.keySet();
+		String[] keySet = provider.keys();
 		for (String topicName : keySet) {
 			String hrefStatistics;
 			String hrefList;
@@ -75,7 +75,7 @@ public class TopicViewer {
 			}
 			tableBuilder.addRow(topicName, hrefStatistics, hrefList);
 		}
-		String body = keySet.isEmpty() ? "is empty" : tableBuilder.buildHtml();
+		String body = keySet.length == 0 ? "is empty" : tableBuilder.buildHtml();
 		return htmlPage("Topics", "Topics:", body);
 	}
 
@@ -126,8 +126,8 @@ public class TopicViewer {
 			uri = htmlHelper.uriBuilder(errorPageRef)
 						.addParameter(MSG_PARAM, ex.getMessage())
 						.build();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+		} catch (URISyntaxException uriException) {
+			log.error(uriException);
 		}
 		return href(uri, "Error! (see error page)");
 	}
