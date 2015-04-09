@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import shtykh.topic.provider.CachedTopicReader;
 import shtykh.topic.provider.TopicReader;
-import shtykh.topic.util.HtmlHelper;
 
 /**
  * Created by shtykh on 08/04/15.
@@ -22,8 +21,7 @@ public class MainApplication {
 			}
 			TopicReader.rootDirPath = args[0];
 			Object[] classes = new Object[]{
-					HtmlHelper.class,
-					TopicViewerController.class,
+					TopicViewer.class,
 					CachedTopicReader.class,
 					MainApplication.class,
 			};

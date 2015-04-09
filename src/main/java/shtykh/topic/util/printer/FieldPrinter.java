@@ -1,4 +1,4 @@
-package shtykh.topic.provider;
+package shtykh.topic.util.printer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -14,13 +14,19 @@ public abstract class FieldPrinter implements RowPrinter {
 		this.fieldNames = fieldNames;
 	}
 
-	public Collection<String[]> getFieldRows() throws Exception {
+	public Collection<String[]> getFieldRows() throws PrinterException {
 		Collection<String[]> rows = new ArrayList<>();
 		for (String fieldName: fieldNames) {
 			Class clazz = getClass();
-			Field field = clazz.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			Object value = field.get(this);
+			Field field;
+			Object value;
+			try {
+				field = clazz.getDeclaredField(fieldName);
+				field.setAccessible(true);
+				value = field.get(this);
+			} catch (Exception e) {
+				throw new PrinterException(e);
+			}
 			if(FieldPrinter.class.isAssignableFrom(value.getClass())) {
 				Collection<String[]> rowsOfField = ((FieldPrinter) value).getFieldRows();
 				rows.addAll(rowsOfField);
@@ -33,8 +39,12 @@ public abstract class FieldPrinter implements RowPrinter {
 	}
 
 	@Override
-	public Collection<String[]> getRows() throws Exception{
-		return getFieldRows();
+	public Collection<String[]> getRows() throws PrinterException {
+		try {
+			return getFieldRows();
+		} catch (Exception e) {
+			throw new PrinterException(e);
+		}
 	}
 
 	@Override

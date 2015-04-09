@@ -9,15 +9,22 @@ import java.net.URISyntaxException;
  * Created by shtykh on 03/04/15.
  */
 public class HtmlHelper {
-	private final static String SCHEME = "http";
-	private final static String HOST = "localhost";
-	private final static int PORT = 8080;
+
+	private final String scheme;
+	private final String host;
+	private final int port;
+
+	public HtmlHelper(String scheme, String host, int port) {
+		this.scheme = scheme;
+		this.host = host;
+		this.port = port;
+	}
 
 	public URIBuilder uriBuilder(String postfix) throws URISyntaxException {
 		return new URIBuilder()
-				.setScheme(SCHEME)
-				.setHost(HOST)
-				.setPort(PORT)
+				.setScheme(scheme)
+				.setHost(host)
+				.setPort(port)
 				.setPath(postfix);
 	}
 

@@ -1,4 +1,7 @@
-package shtykh.topic.provider;
+package shtykh.topic.data;
+
+import shtykh.topic.util.printer.FieldPrinter;
+import shtykh.topic.util.printer.RowPrinter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,8 +10,9 @@ import java.util.List;
 /**
  * Created by shtykh on 09/04/15.
  */
-public class PartitionsData extends FieldPrinter implements RowPrinter  {
-	private List<Partition> data = new ArrayList<>();
+public class PartitionsData extends FieldPrinter implements RowPrinter {
+	private final List<Partition> data = new ArrayList<>();
+	
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
 	private double avg = 0;

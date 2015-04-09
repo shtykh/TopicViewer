@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import shtykh.topic.data.Topic;
 import shtykh.topic.provider.Provider;
 import shtykh.topic.util.HtmlHelper;
 import shtykh.topic.util.TableBuilder;
@@ -18,8 +19,13 @@ import static shtykh.topic.util.HtmlHelper.href;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
 @Controller
-public class TopicViewerController {
-	private static final Logger log = Logger.getLogger(TopicViewerController.class);
+public class TopicViewer {
+	private static final Logger log = Logger.getLogger(TopicViewer.class);
+
+	private final static String SCHEME = "http";
+	private final static String HOST = "localhost";
+	private final static int PORT = 8080;
+	
 	private static final String errorPageRef = "/errorPageRef";
 	private static final String topicStatistics = "/topic/stat";
 	private static final String topicPartitionList = "/topic/list";
@@ -32,9 +38,9 @@ public class TopicViewerController {
 	private Provider<Topic> provider;
 
 	@Autowired
-	public TopicViewerController(Provider<Topic> provider, HtmlHelper htmlHelper) {
+	public TopicViewer(Provider<Topic> provider) {
 		this.provider = provider;
-		this.htmlHelper = htmlHelper;
+		this.htmlHelper = new HtmlHelper(SCHEME, HOST, PORT);
 		try {
 			provider.init();
 		} catch (Exception e) {

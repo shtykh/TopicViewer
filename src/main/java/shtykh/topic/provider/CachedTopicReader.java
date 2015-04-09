@@ -1,6 +1,6 @@
 package shtykh.topic.provider;
 
-import shtykh.topic.Topic;
+import shtykh.topic.data.Topic;
 
 import java.io.File;
 import java.util.Map;
@@ -34,8 +34,8 @@ public class CachedTopicReader extends TopicReader {
 		}
 	}
 
-	private boolean needToCache(Topic topic, String timestamp) {
-		return topic == null || !topic.getTimeStamp().equals(timestamp);
+	private boolean needToCache(Topic oldTopicFromCache, String theNewestTimestamp) {
+		return oldTopicFromCache == null || !oldTopicFromCache.getTimestamp().equals(theNewestTimestamp);
 	}
 
 }

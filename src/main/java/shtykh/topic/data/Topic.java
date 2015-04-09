@@ -1,7 +1,6 @@
-package shtykh.topic;
+package shtykh.topic.data;
 
-import shtykh.topic.provider.FieldPrinter;
-import shtykh.topic.provider.PartitionsData;
+import shtykh.topic.util.printer.FieldPrinter;
 import shtykh.topic.util.TableBuilder;
 
 import static shtykh.topic.util.HtmlHelper.htmlPage;
@@ -11,18 +10,18 @@ import static shtykh.topic.util.HtmlHelper.htmlPage;
  */
 public class Topic extends FieldPrinter {
 	private final String name;
-	private final String timeStamp;
+	private final String timestamp;
 	private final PartitionsData partitionsData;
 
-	public Topic(String name, String timeStamp, PartitionsData partitionsData) {
-		super(new String[]{"name", "timeStamp", "partitionsData"});
+	public Topic(String name, String timestamp, PartitionsData partitionsData) {
+		super(new String[]{"name", "timestamp", "partitionsData"});
 		this.name = name;
-		this.timeStamp = timeStamp;
+		this.timestamp = timestamp;
 		this.partitionsData = partitionsData;
 	}
 
-	public String getTimeStamp() {
-		return timeStamp;
+	public String getTimestamp() {
+		return timestamp;
 	}
 
 	public String getPartitionDataPage() {

@@ -7,4 +7,8 @@ public class TopicReaderException extends Exception {
 	public TopicReaderException(String msg, Exception e) {
 		super(msg + "\n" + e.getMessage());
 	}
+
+	public TopicReaderException(String msg) {
+		super(msg);
+	}
 }

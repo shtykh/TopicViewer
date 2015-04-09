@@ -1,6 +1,7 @@
 package shtykh.topic.provider;
 
-import shtykh.topic.Topic;
+import shtykh.topic.data.PartitionsData;
+import shtykh.topic.data.Topic;
 
 import java.util.HashMap;
 

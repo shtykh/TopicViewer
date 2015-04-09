@@ -2,7 +2,8 @@ package shtykh.topic.provider;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import shtykh.topic.Topic;
+import shtykh.topic.data.PartitionsData;
+import shtykh.topic.data.Topic;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,6 +15,7 @@ import java.util.*;
  */
 public class TopicReader implements Provider<Topic> {
 	public static String rootDirPath;
+	
 	private File rootDir;
 	private Set<String> keySet;
 
@@ -22,7 +24,7 @@ public class TopicReader implements Provider<Topic> {
 		keySet = new HashSet<>();
 		this.rootDir = new File(rootDirPath);
 		if (!rootDir.isDirectory()) {
-			throw new Exception(rootDirPath + " is not a directory");
+			throw new TopicReaderException(rootDirPath + " is not a directory");
 		}
 	}
 
@@ -73,10 +75,8 @@ public class TopicReader implements Provider<Topic> {
 						Integer.decode(record.get(0).trim()),
 						Long.   decode(record.get(1).trim())));
 			return topic;
-		} catch (IOException e) {
-			throw new TopicReaderException("IOException in file: " + file.getAbsolutePath(), e);
-		} catch (NumberFormatException e) {
-			throw new TopicReaderException("Invalid csv file: " + file.getAbsolutePath(), e);
+		} catch (IOException | NumberFormatException e) {
+			throw new TopicReaderException(e.getClass().getSimpleName() + " in file: " + file.getAbsolutePath(), e);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package shtykh.topic.provider;
+package shtykh.topic.util.printer;
 
 import shtykh.topic.util.TableBuilder;
 
@@ -8,10 +8,10 @@ import java.util.Collection;
  * Created by shtykh on 09/04/15.
  */
 public interface RowPrinter {
-	default TableBuilder getRowTable() throws Exception {
+	default TableBuilder getRowTable() throws PrinterException {
 		return new TableBuilder().addRows(getRows());
 	}
 	
-	Collection<String[]> getRows() throws Exception;
+	Collection<String[]> getRows() throws PrinterException;
 	boolean isEmpty();
 }
