@@ -69,8 +69,8 @@ public class TopicReader implements Provider<Topic> {
 			PartitionsData data = new PartitionsData();
 			Topic topic = new Topic(name, timestamp, data);
 			reader.forEach((record)->data.addPartition(
-						Integer.decode(record.get(0)),
-						Long.   decode(record.get(1))));
+						Integer.decode(record.get(0).trim()),
+						Long.   decode(record.get(1).trim())));
 			return topic;
 		} catch (IOException e) {
 			throw new TopicReaderException("IOException in file: " + file.getAbsolutePath(), e);

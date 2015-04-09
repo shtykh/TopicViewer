@@ -1,18 +1,32 @@
 package shtykh.topic.util;
 
+import org.apache.http.client.utils.URIBuilder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Created by shtykh on 03/04/15.
  */
 public class HtmlHelper {
-	private String host = "localhost";
-	private String port = "8080";
+	private final static String SCHEME = "http";
+	private final static String HOST = "localhost";
+	private final static int PORT = 8080;
 
-	public String href(String postfix) {
-		return href(postfix, null);
+	public URIBuilder uriBuilder(String postfix) throws URISyntaxException {
+		return new URIBuilder()
+				.setScheme(SCHEME)
+				.setHost(HOST)
+				.setPort(PORT)
+				.setPath(postfix);
 	}
 
-	public String href(String postfix, String name) {
-		String href = "http://" + host + ":" + port + "/" + postfix;
+	public static String href(URI uri) {
+		return href(uri, null);
+	}
+
+	public static String href(URI uri, String name) {
+		String href = uri.toString();
 		if (name == null) {
 			name = href;
 		}
@@ -20,17 +34,26 @@ public class HtmlHelper {
 	}
 
 	public static String htmlPage(String title, String body) {
-		return htmlPage(title, title, body);
+		return new HtmlBuilder()
+				.title(title)
+				.body(body)
+				.build();
 	}
 
 	public static String htmlPage(String title, String header, String body) {
-		return new HtmlBuilder().title(title).header(header).body(body).build();
+		return new HtmlBuilder()
+				.title(title)
+				.header(header)
+				.body(body)
+				.build();
 	}
 	
 	private static class HtmlBuilder {
-		private String title = "Title";
-		private String header = "Header";
-		private String body = "Body";
+		private static final String DEFAULT_TITLE = "Untitled";
+		private static final String DEFAULT_BODY = "";
+		private String title;
+		private String header;
+		private String body;
 
 		public HtmlBuilder title(String title) {
 			this.title = title;
@@ -46,19 +69,28 @@ public class HtmlHelper {
 			this.body = body.replace("\n", "<br/>");
 			return this;
 		}
-		
+
 		public String build() {
-			return "<html>" +
-					"<title>" +
-					title +
-					"</title>" +
-					"<body>" +
-					"<h1>" +
-					header +
-					"</h1>" +
-					body +
-					"</body>" +
-					"</html>";
+			assignDefaultIfNull();
+			return "<html><title>" + 
+					title + 
+					"</title><body><h1>" + 
+					header + 
+					"</h1>" + 
+					body + 
+					"</body></html>";
+		}
+
+		private void assignDefaultIfNull() {
+			if (title == null) {
+				title = DEFAULT_TITLE;
+			}
+			if (header == null) {
+				header = title;
+			}
+			if (body == null) {
+				body = DEFAULT_BODY;
+			}
 		}
 	}
 }

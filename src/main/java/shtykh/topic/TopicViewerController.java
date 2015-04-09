@@ -2,7 +2,6 @@ package shtykh.topic;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,20 +10,23 @@ import shtykh.topic.provider.Provider;
 import shtykh.topic.util.HtmlHelper;
 import shtykh.topic.util.TableBuilder;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
-import static java.net.URLEncoder.encode;
+import static shtykh.topic.util.HtmlHelper.href;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
 @Controller
 public class TopicViewerController {
-	private static Logger log = Logger.getLogger(TopicViewerController.class);
+	private static final Logger log = Logger.getLogger(TopicViewerController.class);
+	private static final String errorPageRef = "/errorPageRef";
+	private static final String topicStatistics = "/topic/stat";
+	private static final String topicPartitionList = "/topic/list";
+	private static final String NAME_PARAM = "name";
+	private static final String MSG_PARAM = "msg";
+
 	private String INITIALISATION_ERROR_PAGE = null;
-	
-	private final String errorPageRef = "errorPageRef";
-	private final String topicStatistics = "topic/stat";
-	private final String topicPartitionList = "topic/list";
 
 	private HtmlHelper htmlHelper;
 	private Provider<Topic> provider;
@@ -33,10 +35,6 @@ public class TopicViewerController {
 	public TopicViewerController(Provider<Topic> provider, HtmlHelper htmlHelper) {
 		this.provider = provider;
 		this.htmlHelper = htmlHelper;
-		init();
-	}
-
-	public void init() {
 		try {
 			provider.init();
 		} catch (Exception e) {
@@ -56,9 +54,14 @@ public class TopicViewerController {
 			String hrefStatistics;
 			String hrefList;
 			try {
-				String cleanName = encode(topicName, "UTF-8");
-				hrefStatistics = htmlHelper.href(topicStatistics + "?name=" + cleanName);
-				hrefList = htmlHelper.href(topicPartitionList + "?name=" + cleanName);
+				URI uriStatistics = htmlHelper.uriBuilder(topicStatistics)
+						.addParameter(NAME_PARAM, topicName)
+						.build();
+				hrefStatistics = href(uriStatistics);
+				URI uriPartitions = htmlHelper.uriBuilder(topicPartitionList)
+						.addParameter(NAME_PARAM, topicName)
+						.build();
+				hrefList = href(uriPartitions);
 			} catch (Exception e) {
 				String error = errorHref(e);
 				hrefStatistics = error;
@@ -73,7 +76,7 @@ public class TopicViewerController {
 	@RequestMapping(topicStatistics)
 	@ResponseBody
 	public String topicPage(
-			@RequestParam(value = "name") String name) {
+			@RequestParam(value = NAME_PARAM) String name) {
 		if (INITIALISATION_ERROR_PAGE != null) {
 			return INITIALISATION_ERROR_PAGE;
 		}
@@ -88,7 +91,7 @@ public class TopicViewerController {
 	@RequestMapping(topicPartitionList)
 	@ResponseBody
 	public String topicListPage(
-			@RequestParam(value = "name") String name) {
+			@RequestParam(value = NAME_PARAM) String name) {
 		if (INITIALISATION_ERROR_PAGE != null) {
 			return INITIALISATION_ERROR_PAGE;
 		}
@@ -103,22 +106,23 @@ public class TopicViewerController {
 	@RequestMapping(errorPageRef)
 	@ResponseBody
 	public String errorPage(
-			@RequestParam(value = "msg") String msg) {
+			@RequestParam(value = MSG_PARAM) String msg) {
 		return htmlPage("Error", msg);
 	}
 
 	private String errorHref(Exception ex) {
-		log.error(ex.getMessage());
+		log.error(ex);
 		if (INITIALISATION_ERROR_PAGE != null) {
 			return INITIALISATION_ERROR_PAGE;
 		}
-		String message;
+		URI uri = null;
 		try {
-			message = encode(ex.getMessage(), "UTF-8");
-		} catch (UnsupportedEncodingException unsupportedEncodingEx) {
-			log.error(unsupportedEncodingEx.getMessage());
-			message = "UTF8_IS_NOT_SUPPORTED";
+			uri = htmlHelper.uriBuilder(errorPageRef)
+						.addParameter(MSG_PARAM, ex.getMessage())
+						.build();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}
-		return htmlHelper.href(errorPageRef + "?msg=" + message, "Error! (see error page)");
+		return href(uri, "Error! (see error page)");
 	}
 }

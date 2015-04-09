@@ -28,9 +28,9 @@ public class Topic extends FieldPrinter {
 	public String getPartitionDataPage() {
 		String body = partitionsData.isEmpty()
 				? "There is no partitions."
-				: new TableBuilder("Partition number", "Messages number").
-					addRows(partitionsData.getRows()).
-					buildHtml();
+				: new TableBuilder("Partition number", "Messages number")
+					.addRows(partitionsData.getRows())
+					.buildHtml();
 		return htmlPage("Topic '" + name + "'. Partitions.", body);
 	}
 
