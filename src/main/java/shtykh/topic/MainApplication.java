@@ -2,8 +2,7 @@ package shtykh.topic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.core.io.ResourceLoader;
+import shtykh.topic.provider.TopicReader;
 import shtykh.topic.util.HtmlHelper;
 
 /**
@@ -17,12 +16,9 @@ public class MainApplication {
 				TopicViewerController.class,
 				TopicReader.class,
 				MainApplication.class,
-				String.class,
 				};
-		ResourceLoader resourceLoader = new FileSystemXmlApplicationContext("/src/main/resources/applicationContext.xml");
 		SpringApplication app = new SpringApplicationBuilder().
-				sources(classes).
-				resourceLoader(resourceLoader).build();
+				sources(classes).build();
 		app.run(args);
 	}
 }

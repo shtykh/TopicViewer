@@ -1,7 +1,8 @@
-package shtykh.topic;
+package shtykh.topic.provider;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import shtykh.topic.Topic;
 
 import java.io.File;
 import java.io.FileReader;
@@ -80,10 +81,11 @@ public class TopicReader implements Provider<Topic> {
 	}
 
 	private Topic readFromFile(String name, String timestamp, File file) throws TopicReaderException {
-		Topic topic = new Topic(name, timestamp);
 		try {
 			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
-			reader.forEach((record)->topic.addPartition(
+			PartitionsData data = new PartitionsData();
+			Topic topic = new Topic(name, timestamp, data);
+			reader.forEach((record)->data.addPartition(
 						Integer.decode(record.get(0)),
 						Long.   decode(record.get(1))));
 			cache.put(name, topic);

@@ -1,4 +1,4 @@
-package shtykh.topic;
+package shtykh.topic.provider;
 
 /**
  * Created by shtykh on 08/04/15.

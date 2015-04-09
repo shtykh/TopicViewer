@@ -1,45 +1,47 @@
 package shtykh.topic.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by shtykh on 06/04/15.
  */
-public class Table {
+public class TableBuilder {
 	private static final int BORDER = 1;
-	private List<List<String>> contents;
+	private List<String[]> contents;
 
-	public Table(String... hat) {
+	public TableBuilder(String... hat) {
 		contents = new ArrayList<>();
 		if (hat.length != 0) {
 			addRow(hat);
 		}
 	}
 
-	public void addRow(String... strings) {
-		contents.add(Arrays.asList(strings));
+	public TableBuilder addRow(String... strings) {
+		contents.add(strings);
+		return this;
 	}
 	
-	public String html() {
+	public TableBuilder addRows(Collection<String[]> rows) {
+		contents.addAll(rows);
+		return this;
+	}
+	
+	public String buildHtml() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<table border=" + BORDER + ">");
 		for (int i = 0; i < contents.size(); i++) {
-			List<String> row = contents.get(i);
+			String[] row = contents.get(i);
 			sb.append("<tr>");
-			for (int j = 0; j < contents.get(i).size(); j++) {
+			for (int j = 0; j < contents.get(i).length; j++) {
 				sb.append("<td>");
-				sb.append(row.get(j));
+				sb.append(row[j]);
 				sb.append("</td>");
 			}
 			sb.append("</tr>");
 		}
 		sb.append("</table>");
 		return sb.toString();
-	}
-	
-	public String toString() {
-		return html();
 	}
 }
