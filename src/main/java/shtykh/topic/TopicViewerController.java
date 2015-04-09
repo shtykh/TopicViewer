@@ -26,7 +26,7 @@ public class TopicViewerController {
 	private static final String NAME_PARAM = "name";
 	private static final String MSG_PARAM = "msg";
 
-	private String INITIALISATION_ERROR_PAGE = null;
+	private String initialisationErrorPage = null;
 
 	private HtmlHelper htmlHelper;
 	private Provider<Topic> provider;
@@ -38,15 +38,15 @@ public class TopicViewerController {
 		try {
 			provider.init();
 		} catch (Exception e) {
-			INITIALISATION_ERROR_PAGE = e.getMessage();
+			initialisationErrorPage = e.getMessage();
 		}
 	}
 
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		if (INITIALISATION_ERROR_PAGE != null) {
-			return INITIALISATION_ERROR_PAGE;
+		if (initialisationErrorPage != null) {
+			return initialisationErrorPage;
 		}
 		TableBuilder tableBuilder = new TableBuilder("Name", "Statistics", "Partitions list");
 		Set<String> keySet = provider.keySet();
@@ -77,8 +77,8 @@ public class TopicViewerController {
 	@ResponseBody
 	public String topicPage(
 			@RequestParam(value = NAME_PARAM) String name) {
-		if (INITIALISATION_ERROR_PAGE != null) {
-			return INITIALISATION_ERROR_PAGE;
+		if (initialisationErrorPage != null) {
+			return initialisationErrorPage;
 		}
 		try {
 			Topic topic = provider.get(name);
@@ -92,8 +92,8 @@ public class TopicViewerController {
 	@ResponseBody
 	public String topicListPage(
 			@RequestParam(value = NAME_PARAM) String name) {
-		if (INITIALISATION_ERROR_PAGE != null) {
-			return INITIALISATION_ERROR_PAGE;
+		if (initialisationErrorPage != null) {
+			return initialisationErrorPage;
 		}
 		try {
 			Topic topic = provider.get(name);
@@ -112,8 +112,8 @@ public class TopicViewerController {
 
 	private String errorHref(Exception ex) {
 		log.error(ex);
-		if (INITIALISATION_ERROR_PAGE != null) {
-			return INITIALISATION_ERROR_PAGE;
+		if (initialisationErrorPage != null) {
+			return initialisationErrorPage;
 		}
 		URI uri = null;
 		try {

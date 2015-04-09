@@ -1,5 +1,6 @@
 package shtykh.topic;
 
+import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -12,17 +13,27 @@ import shtykh.topic.util.HtmlHelper;
  */
 @EnableAutoConfiguration
 public class MainApplication {
+	private static final Logger log = Logger.getLogger(MainApplication.class);
+
 	public static void main(String[] args) throws Exception {
-		TopicReader.ROOT_DIR = args[0];
-		Object[] classes = new Object[]{
-				HtmlHelper.class,
-				TopicViewerController.class,
-				CachedTopicReader.class,
-				MainApplication.class,
-				};
-		SpringApplication app = new SpringApplicationBuilder().
-				sources(classes).
-				build();
-		app.run(args);
+		try {
+			if (args.length < 1) {
+				throw new Exception("args could not be empty!");
+			}
+			TopicReader.rootDirPath = args[0];
+			Object[] classes = new Object[]{
+					HtmlHelper.class,
+					TopicViewerController.class,
+					CachedTopicReader.class,
+					MainApplication.class,
+			};
+			SpringApplication app = new SpringApplicationBuilder().
+					sources(classes).
+					build();
+			app.run(args);
+		} catch (Exception e) {
+			log.error(e);
+			throw e;
+		}
 	}
 }

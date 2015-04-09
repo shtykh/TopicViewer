@@ -13,16 +13,16 @@ import java.util.*;
  * Created by shtykh on 06/04/15.
  */
 public class TopicReader implements Provider<Topic> {
-	public static String ROOT_DIR;
+	public static String rootDirPath;
 	private File rootDir;
 	private Set<String> keySet;
 
 	@Override
 	public void init() throws Exception {
 		keySet = new HashSet<>();
-		this.rootDir = new File(ROOT_DIR);
+		this.rootDir = new File(rootDirPath);
 		if (!rootDir.isDirectory()) {
-			throw new Exception(ROOT_DIR + " is not a directory");
+			throw new Exception(rootDirPath + " is not a directory");
 		}
 	}
 
@@ -49,8 +49,9 @@ public class TopicReader implements Provider<Topic> {
 		if (timestampFiles == null) {
 			return null;
 		} else {
-			Arrays.sort(timestampFiles, Comparator.<File>reverseOrder());
-			return timestampFiles[0];
+			return Arrays.stream(timestampFiles)
+					.max(Comparator.<File>reverseOrder())
+					.orElse(null);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class TopicReader implements Provider<Topic> {
 			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
 			PartitionsData data = new PartitionsData();
 			Topic topic = new Topic(name, timestamp, data);
-			reader.forEach((record)->data.addPartition(
+			reader.forEach(record -> data.addPartition(
 						Integer.decode(record.get(0).trim()),
 						Long.   decode(record.get(1).trim())));
 			return topic;
