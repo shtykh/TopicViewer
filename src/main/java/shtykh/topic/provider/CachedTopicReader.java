@@ -22,7 +22,6 @@ public class CachedTopicReader extends TopicReader {
 	public Topic get(String topicName) throws ProviderException {
 		File lastTimestampDir = getTheLastTimestampDir(topicName);
 		if (lastTimestampDir == null) {
-			cache.remove(topicName);
 			return null;
 		} else {
 			Topic topic = cache.get(topicName);

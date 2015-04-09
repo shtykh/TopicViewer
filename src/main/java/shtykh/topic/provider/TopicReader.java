@@ -45,7 +45,7 @@ public class TopicReader implements Provider<String, Topic> {
 			return null;
 		} else {
 			return Arrays.stream(timestampFiles)
-					.max(Comparator.<File>reverseOrder())
+					.max(Comparator.<File>naturalOrder())
 					.orElse(null);
 		}
 	}
