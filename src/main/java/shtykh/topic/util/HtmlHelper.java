@@ -54,6 +54,10 @@ public class HtmlHelper {
 				.body(body)
 				.build();
 	}
+
+	public static String errorPage(String msg) {
+		return htmlPage("Error", msg);
+	}
 	
 	private static class HtmlBuilder {
 		private static final String DEFAULT_TITLE = "Untitled";

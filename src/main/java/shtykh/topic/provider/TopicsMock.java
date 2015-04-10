@@ -20,9 +20,6 @@ public class TopicsMock implements Provider<String, Topic> {
 	public static final String TIMESTAMP1 = "1215-04-06-13-02-22";
 	public static final String TIMESTAMP2 = "8815-04-06-22-02-22";
 
-
-
-
 	public TopicsMock() {
 		PartitionsData data = new PartitionsData();
 		for (int i = 0; i < 12; i++) {
@@ -31,10 +28,6 @@ public class TopicsMock implements Provider<String, Topic> {
 		map.put(KEY0, new Topic(KEY0, TIMESTAMP0, data));
 		map.put(KEY1, new Topic(KEY1, TIMESTAMP1, data));
 		map.put(KEY2, new Topic(KEY2, TIMESTAMP2, data));
-	}
-
-	@Override
-	public void init() {
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import shtykh.topic.util.TableBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static shtykh.topic.util.HtmlHelper.errorPage;
 import static shtykh.topic.util.HtmlHelper.href;
 import static shtykh.topic.util.HtmlHelper.htmlPage;
 
@@ -31,8 +32,6 @@ public class TopicViewer {
 	private static final String NAME_PARAM = "name";
 	private static final String MSG_PARAM = "msg";
 
-	private String initialisationErrorPage = null;
-
 	private HtmlHelper htmlHelper;
 	private Provider<String, Topic> provider;
 
@@ -40,20 +39,11 @@ public class TopicViewer {
 	public TopicViewer(Provider<String, Topic> provider) {
 		this.provider = provider;
 		this.htmlHelper = new HtmlHelper(SCHEME, HOST, PORT);
-		try {
-			provider.init();
-		} catch (Exception e) {
-			initialisationErrorPage = e.getMessage();
-			log.error(initialisationErrorPage);
-		}
 	}
 
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		if (initialisationErrorPage != null) {
-			return initialisationErrorPage;
-		}
 		TableBuilder tableBuilder = new TableBuilder("Name", "Statistics", "Partitions list");
 		String[] keySet = provider.keys();
 		for (String topicName : keySet) {
@@ -83,9 +73,6 @@ public class TopicViewer {
 	@ResponseBody
 	public String topicPage(
 			@RequestParam(value = NAME_PARAM) String name) {
-		if (initialisationErrorPage != null) {
-			return initialisationErrorPage;
-		}
 		try {
 			Topic topic = provider.get(name);
 			return topic.getStatisticsPage();
@@ -98,9 +85,6 @@ public class TopicViewer {
 	@ResponseBody
 	public String topicListPage(
 			@RequestParam(value = NAME_PARAM) String name) {
-		if (initialisationErrorPage != null) {
-			return initialisationErrorPage;
-		}
 		try {
 			Topic topic = provider.get(name);
 			return topic.getPartitionDataPage();
@@ -109,18 +93,8 @@ public class TopicViewer {
 		}
 	}
 
-	@RequestMapping(errorPageRef)
-	@ResponseBody
-	public String errorPage(
-			@RequestParam(value = MSG_PARAM) String msg) {
-		return htmlPage("Error", msg);
-	}
-
 	private String errorHref(Exception ex) {
 		log.error(ex);
-		if (initialisationErrorPage != null) {
-			return initialisationErrorPage;
-		}
 		URI uri = null;
 		try {
 			uri = htmlHelper.uriBuilder(errorPageRef)

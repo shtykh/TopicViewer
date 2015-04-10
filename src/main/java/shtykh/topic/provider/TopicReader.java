@@ -2,6 +2,7 @@ package shtykh.topic.provider;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.springframework.boot.CommandLineRunner;
 import shtykh.topic.data.PartitionsData;
 import shtykh.topic.data.Topic;
 
@@ -13,13 +14,15 @@ import java.util.*;
 /**
  * Created by shtykh on 06/04/15.
  */
-public class TopicReader implements Provider<String, Topic> {
-	public static String rootDirPath;
-	
+public class TopicReader implements Provider<String, Topic>, CommandLineRunner{
 	private File rootDir;
 
 	@Override
-	public void init() throws ProviderException {
+	public void run(String... args) throws Exception {
+		if (args.length == 0) {
+			throw new ProviderException("root directory wasn't initialized!");
+		}
+		String rootDirPath = args[0];
 		this.rootDir = new File(rootDirPath);
 		if (!rootDir.isDirectory()) {
 			throw new ProviderException(rootDirPath + " is not a directory");
@@ -29,7 +32,7 @@ public class TopicReader implements Provider<String, Topic> {
 	@Override
 	public String[] keys() {
 		return Arrays.stream(rootDir.listFiles())
-				.map(file -> file.getName())
+				.map(File::getName)
 				.toArray(String[]::new);
 	}
 
@@ -40,17 +43,13 @@ public class TopicReader implements Provider<String, Topic> {
 	}
 
 	protected File getTheLastTimestampDir(String topicName) {
-		File[] timestampFiles = getTopicDir(topicName).listFiles();
-		if (timestampFiles == null) {
-			return null;
-		} else {
-			return Arrays.stream(timestampFiles)
+		File[] files = getTopicDir(topicName).listFiles();
+		return Arrays.stream(files)
 					.max(Comparator.<File>naturalOrder())
 					.orElse(null);
-		}
 	}
 
-	protected Topic readTopic(String topicName, File timestampFile) throws ProviderException {
+	protected static Topic readTopic(String topicName, File timestampFile) throws ProviderException {
 		File file = new File(timestampFile.getAbsolutePath().concat("/offsets.csv"));
 		return readFromFile(topicName, timestampFile.getName(), file);
 	}
@@ -59,7 +58,7 @@ public class TopicReader implements Provider<String, Topic> {
 		return new File(rootDir.getAbsolutePath().concat("/" + topicName + "/history/"));
 	}
 
-	private Topic readFromFile(String name, String timestamp, File file) throws ProviderException {
+	private static Topic readFromFile(String name, String timestamp, File file) throws ProviderException {
 		try {
 			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
 			PartitionsData data = new PartitionsData();

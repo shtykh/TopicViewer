@@ -1,5 +1,6 @@
 package shtykh.topic.data;
 
+import org.springframework.stereotype.Controller;
 import shtykh.topic.util.printer.FieldPrinter;
 import shtykh.topic.util.TableBuilder;
 import shtykh.topic.util.printer.PrinterException;
@@ -9,6 +10,7 @@ import static shtykh.topic.util.HtmlHelper.htmlPage;
 /**
  * Created by shtykh on 03/04/15.
  */
+@Controller
 public class Topic extends FieldPrinter {
 	private final String name;
 	private final String timestamp;
