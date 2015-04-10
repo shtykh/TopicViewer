@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import shtykh.topic.provider.CachedTopicReader;
+import shtykh.topic.provider.args.CommandLineArgs;
 
 /**
  * Created by shtykh on 08/04/15.
@@ -18,6 +19,7 @@ public class MainApplication {
 			Object[] classes = new Object[]{
 					TopicViewer.class,
 					CachedTopicReader.class,
+					CommandLineArgs.class,
 					MainApplication.class,
 			};
 			SpringApplication app = new SpringApplicationBuilder()

@@ -2,23 +2,23 @@ package shtykh.topic.provider;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.springframework.boot.CommandLineRunner;
 import shtykh.topic.data.PartitionsData;
 import shtykh.topic.data.Topic;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Created by shtykh on 06/04/15.
  */
-public class TopicReader implements Provider<String, Topic>, CommandLineRunner{
+public class TopicReader implements Provider<String, Topic>, ArgsReceiver{
 	private File rootDir;
 
 	@Override
-	public void run(String... args) throws Exception {
+	public void receive(String[] args) throws ProviderException {
 		if (args.length == 0) {
 			throw new ProviderException("root directory wasn't initialized!");
 		}
