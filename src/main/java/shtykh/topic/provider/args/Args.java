@@ -9,7 +9,7 @@ import shtykh.topic.provider.ProviderException;
 public abstract class Args {
 	private ArgsReceiver receiver;
 
-	public Args(ArgsReceiver receiver) {
+	protected Args(ArgsReceiver receiver) {
 		this.receiver = receiver;
 	}
 

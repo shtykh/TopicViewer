@@ -6,13 +6,14 @@ import shtykh.topic.util.printer.RowPrinter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by shtykh on 09/04/15.
  */
 public class PartitionsData extends FieldPrinter implements RowPrinter {
 	private final List<Partition> data = new ArrayList<>();
-	
+
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
 	private double avg = 0;
@@ -29,14 +30,12 @@ public class PartitionsData extends FieldPrinter implements RowPrinter {
 		sum += messageNumber;
 		data.add(new Partition(partitionNumber, messageNumber));
 	}
-	
+
 	@Override
-	public Collection<String[]> getRows(){
-		Collection<String[]> rows = new ArrayList<>();
-		for (Partition partition : data) {
-			rows.add(partition.toStringRow());	
-		}
-		return rows;
+	public Collection<String[]> getRows() {
+		return data.stream()
+				.map(Partition::toStringRow)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -57,5 +56,5 @@ public class PartitionsData extends FieldPrinter implements RowPrinter {
 			return new String[]{String.valueOf(number), String.valueOf(messages)};
 		}
 	}
-	
+
 }

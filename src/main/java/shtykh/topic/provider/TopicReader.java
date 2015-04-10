@@ -14,7 +14,7 @@ import java.util.Comparator;
 /**
  * Created by shtykh on 06/04/15.
  */
-public class TopicReader implements Provider<String, Topic>, ArgsReceiver{
+public class TopicReader implements Provider<String, Topic>, ArgsReceiver {
 	private File rootDir;
 
 	@Override
@@ -45,8 +45,8 @@ public class TopicReader implements Provider<String, Topic>, ArgsReceiver{
 	protected File getTheLastTimestampDir(String topicName) {
 		File[] files = getTopicDir(topicName).listFiles();
 		return Arrays.stream(files)
-					.max(Comparator.<File>naturalOrder())
-					.orElse(null);
+				.max(Comparator.<File>naturalOrder())
+				.orElse(null);
 	}
 
 	protected static Topic readTopic(String topicName, File timestampFile) throws ProviderException {
@@ -64,8 +64,8 @@ public class TopicReader implements Provider<String, Topic>, ArgsReceiver{
 			PartitionsData data = new PartitionsData();
 			Topic topic = new Topic(name, timestamp, data);
 			reader.forEach(record -> data.addPartition(
-						Integer.decode(record.get(0).trim()),
-						Long.   decode(record.get(1).trim())));
+					Integer.decode(record.get(0).trim()),
+					Long.decode(record.get(1).trim())));
 			return topic;
 		} catch (IOException | NumberFormatException e) {
 			throw new ProviderException(e.getClass().getSimpleName() + " in file: " + file.getAbsolutePath(), e);

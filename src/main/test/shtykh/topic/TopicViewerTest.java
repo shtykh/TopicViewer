@@ -23,8 +23,18 @@ import shtykh.topic.provider.args.ArgsMock;
 @WebAppConfiguration
 @IntegrationTest("server.port=9000")
 public class TopicViewerTest {
+	private static final String EXPECTED_HOME_RESPONSE_BODY =
+			"<html><title>Topics</title>" +
+			"<body><h1>Topics:</h1>" +
+			"<table border=1>" +
+			"<tr><td>Name</td><td>Statistics</td><td>Partitions list</td></tr>" +
+			"<tr><td>now1</td><td><a href=http://localhost:8080/topic/stat?name=now1>http://localhost:8080/topic/stat?name=now1</a></td><td><a href=http://localhost:8080/topic/list?name=now1>http://localhost:8080/topic/list?name=now1</a></td></tr>" +
+			"<tr><td>old one</td><td><a href=http://localhost:8080/topic/stat?name=old+one>http://localhost:8080/topic/stat?name=old+one</a></td><td><a href=http://localhost:8080/topic/list?name=old+one>http://localhost:8080/topic/list?name=old+one</a></td></tr>" +
+			"<tr><td>topic with space in csv</td><td><a href=http://localhost:8080/topic/stat?name=topic+with+space+in+csv>http://localhost:8080/topic/stat?name=topic+with+space+in+csv</a></td><td><a href=http://localhost:8080/topic/list?name=topic+with+space+in+csv>http://localhost:8080/topic/list?name=topic+with+space+in+csv</a></td></tr>" +
+			"<tr><td>topicNew</td><td><a href=http://localhost:8080/topic/stat?name=topicNew>http://localhost:8080/topic/stat?name=topicNew</a></td><td><a href=http://localhost:8080/topic/list?name=topicNew>http://localhost:8080/topic/list?name=topicNew</a></td></tr><tr><td>¥ˆ≤µ˚∞§</td><td><a href=http://localhost:8080/topic/stat?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7>http://localhost:8080/topic/stat?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7</a></td><td><a href=http://localhost:8080/topic/list?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7>http://localhost:8080/topic/list?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7</a></td></tr>" +
+			"</table></body></html>";
+	
 	private RestTemplate restTemplate;
-
 
 	@Before
 	public void setUp() throws Exception {
@@ -35,8 +45,6 @@ public class TopicViewerTest {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity =
 				restTemplate.getForEntity("http://localhost:9000/", String.class);
-		System.out.println("");
-		Assert.assertEquals("<html><title>Topics</title><body><h1>Topics:</h1><table border=1><tr><td>Name</td><td>Statistics</td><td>Partitions list</td></tr><tr><td>now1</td><td><a href=http://localhost:8080/topic/stat?name=now1>http://localhost:8080/topic/stat?name=now1</a></td><td><a href=http://localhost:8080/topic/list?name=now1>http://localhost:8080/topic/list?name=now1</a></td></tr><tr><td>old one</td><td><a href=http://localhost:8080/topic/stat?name=old+one>http://localhost:8080/topic/stat?name=old+one</a></td><td><a href=http://localhost:8080/topic/list?name=old+one>http://localhost:8080/topic/list?name=old+one</a></td></tr><tr><td>topic with space in csv</td><td><a href=http://localhost:8080/topic/stat?name=topic+with+space+in+csv>http://localhost:8080/topic/stat?name=topic+with+space+in+csv</a></td><td><a href=http://localhost:8080/topic/list?name=topic+with+space+in+csv>http://localhost:8080/topic/list?name=topic+with+space+in+csv</a></td></tr><tr><td>topicNew</td><td><a href=http://localhost:8080/topic/stat?name=topicNew>http://localhost:8080/topic/stat?name=topicNew</a></td><td><a href=http://localhost:8080/topic/list?name=topicNew>http://localhost:8080/topic/list?name=topicNew</a></td></tr><tr><td>¥ˆ≤µ˚∞§</td><td><a href=http://localhost:8080/topic/stat?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7>http://localhost:8080/topic/stat?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7</a></td><td><a href=http://localhost:8080/topic/list?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7>http://localhost:8080/topic/list?name=%C2%A5%CB%86%E2%89%A4%C2%B5%CB%9A%E2%88%9E%C2%A7</a></td></tr></table></body></html>",
-				entity.getBody());
+		Assert.assertEquals(EXPECTED_HOME_RESPONSE_BODY, entity.getBody());
 	}
 }

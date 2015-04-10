@@ -11,7 +11,8 @@ public interface RowPrinter {
 	default TableBuilder getRowTable() throws PrinterException {
 		return new TableBuilder().addRows(getRows());
 	}
-	
+
 	Collection<String[]> getRows() throws PrinterException;
+
 	boolean isEmpty();
 }

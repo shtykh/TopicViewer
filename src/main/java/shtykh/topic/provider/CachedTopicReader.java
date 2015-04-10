@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CachedTopicReader extends TopicReader {
 	private Map<String, Topic> cache;
-	
+
 	public CachedTopicReader() {
 		cache = new ConcurrentHashMap<>();
 	}

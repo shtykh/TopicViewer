@@ -26,6 +26,7 @@ public class MainApplication {
 					.sources(classes)
 					.build();
 			app.run(args);
+			log.info("Application launched successfully");
 		} catch (Exception e) {
 			log.error(e);
 			throw e;

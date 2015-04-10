@@ -22,18 +22,18 @@ public class TableBuilder {
 		contents.add(strings);
 		return this;
 	}
-	
+
 	public TableBuilder addRows(Collection<String[]> rows) {
 		contents.addAll(rows);
 		return this;
 	}
-	
+
 	public String buildHtml() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<table border=" + BORDER + ">");
-		for (String[] row: contents) {
+		for (String[] row : contents) {
 			sb.append("<tr>");
-			for (String cell: row) {
+			for (String cell : row) {
 				sb.append("<td>");
 				sb.append(cell);
 				sb.append("</td>");

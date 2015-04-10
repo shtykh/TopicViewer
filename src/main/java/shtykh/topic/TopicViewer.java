@@ -14,9 +14,7 @@ import shtykh.topic.util.TableBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static shtykh.topic.util.HtmlHelper.errorPage;
-import static shtykh.topic.util.HtmlHelper.href;
-import static shtykh.topic.util.HtmlHelper.htmlPage;
+import static shtykh.topic.util.HtmlHelper.*;
 
 @Controller
 public class TopicViewer {
@@ -25,7 +23,7 @@ public class TopicViewer {
 	private final static String SCHEME = "http";
 	private final static String HOST = "localhost";
 	private final static int PORT = 8080;
-	
+
 	private static final String errorPageRef = "/errorPageRef";
 	private static final String topicStatistics = "/topic/stat";
 	private static final String topicPartitionList = "/topic/list";
@@ -61,7 +59,7 @@ public class TopicViewer {
 			} catch (Exception e) {
 				String error = errorHref(e);
 				hrefStatistics = error;
-				hrefList       = error;
+				hrefList = error;
 			}
 			tableBuilder.addRow(topicName, hrefStatistics, hrefList);
 		}
@@ -98,8 +96,8 @@ public class TopicViewer {
 		URI uri = null;
 		try {
 			uri = htmlHelper.uriBuilder(errorPageRef)
-						.addParameter(MSG_PARAM, ex.getMessage())
-						.build();
+					.addParameter(MSG_PARAM, ex.getMessage())
+					.build();
 		} catch (URISyntaxException uriException) {
 			log.error(uriException);
 		}

@@ -16,7 +16,7 @@ public abstract class FieldPrinter implements RowPrinter {
 
 	public Collection<String[]> getFieldRows() throws PrinterException {
 		Collection<String[]> rows = new ArrayList<>();
-		for (String fieldName: fieldNames) {
+		for (String fieldName : fieldNames) {
 			Class clazz = getClass();
 			Field field;
 			Object value;
@@ -27,10 +27,10 @@ public abstract class FieldPrinter implements RowPrinter {
 			} catch (Exception e) {
 				throw new PrinterException(e);
 			}
-			if(FieldPrinter.class.isAssignableFrom(value.getClass())) {
+			if (FieldPrinter.class.isAssignableFrom(value.getClass())) {
 				Collection<String[]> rowsOfField = ((FieldPrinter) value).getFieldRows();
 				rows.addAll(rowsOfField);
-			} else{
+			} else {
 				rows.add(new String[]{fieldName, value.toString()});
 			}
 			field.setAccessible(false);

@@ -37,7 +37,7 @@ public class HtmlHelper {
 		if (name == null) {
 			name = href;
 		}
-		return "<a href="+ href + ">" + name + "</a>";
+		return "<a href=" + href + ">" + name + "</a>";
 	}
 
 	public static String htmlPage(String title, String body) {
@@ -58,7 +58,7 @@ public class HtmlHelper {
 	public static String errorPage(String msg) {
 		return htmlPage("Error", msg);
 	}
-	
+
 	private static class HtmlBuilder {
 		private static final String DEFAULT_TITLE = "Untitled";
 		private static final String DEFAULT_BODY = "";
@@ -83,12 +83,12 @@ public class HtmlHelper {
 
 		public String build() {
 			assignDefaultIfNull();
-			return "<html><title>" + 
-					title + 
-					"</title><body><h1>" + 
-					header + 
-					"</h1>" + 
-					body + 
+			return "<html><title>" +
+					title +
+					"</title><body><h1>" +
+					header +
+					"</h1>" +
+					body +
 					"</body></html>";
 		}
 
