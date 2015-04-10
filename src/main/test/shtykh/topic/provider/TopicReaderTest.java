@@ -7,7 +7,7 @@ import shtykh.topic.data.Topic;
 import shtykh.topic.provider.args.ArgsMock;
 
 public class TopicReaderTest {
-	private static final String ROOT_PATH = "testData";
+
 	Provider<String, Topic> topicReader;
 
 	@Before
