@@ -28,6 +28,7 @@ public class TopicViewerTest {
 			"<body><h1>Topics:</h1>" +
 			"<table border=1>" +
 			"<tr><td>Name</td><td>Statistics</td><td>Partitions list</td></tr>" +
+			"<tr><td>empty</td><td><a href=http://localhost:8080/topic/stat?name=empty>http://localhost:8080/topic/stat?name=empty</a></td><td><a href=http://localhost:8080/topic/list?name=empty>http://localhost:8080/topic/list?name=empty</a></td></tr>" +
 			"<tr><td>now1</td><td><a href=http://localhost:8080/topic/stat?name=now1>http://localhost:8080/topic/stat?name=now1</a></td><td><a href=http://localhost:8080/topic/list?name=now1>http://localhost:8080/topic/list?name=now1</a></td></tr>" +
 			"<tr><td>old one</td><td><a href=http://localhost:8080/topic/stat?name=old+one>http://localhost:8080/topic/stat?name=old+one</a></td><td><a href=http://localhost:8080/topic/list?name=old+one>http://localhost:8080/topic/list?name=old+one</a></td></tr>" +
 			"<tr><td>topic with space in csv</td><td><a href=http://localhost:8080/topic/stat?name=topic+with+space+in+csv>http://localhost:8080/topic/stat?name=topic+with+space+in+csv</a></td><td><a href=http://localhost:8080/topic/list?name=topic+with+space+in+csv>http://localhost:8080/topic/list?name=topic+with+space+in+csv</a></td></tr>" +
