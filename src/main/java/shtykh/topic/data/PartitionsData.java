@@ -13,14 +13,16 @@ import java.util.stream.Collectors;
  */
 public class PartitionsData extends FieldPrinter implements RowPrinter {
 	private final List<Partition> data = new ArrayList<>();
-
+	private final String name;
+	
 	private long min = Long.MAX_VALUE;
 	private long max = Long.MIN_VALUE;
 	private double avg = 0;
 	private long sum = 0;
 
-	public PartitionsData() {
+	public PartitionsData(String name) {
 		super(new String[]{"min", "max", "avg", "sum"});
+		this.name = name;
 	}
 
 	public void addPartition(int partitionNumber, long messageNumber) {
@@ -57,4 +59,8 @@ public class PartitionsData extends FieldPrinter implements RowPrinter {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }

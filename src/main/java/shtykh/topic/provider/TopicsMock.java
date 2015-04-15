@@ -22,7 +22,7 @@ public class TopicsMock implements Provider<String, Topic> {
 	public static final String TIMESTAMP2 = "8815-04-06-22-02-22";
 
 	public TopicsMock() {
-		PartitionsData data = new PartitionsData();
+		PartitionsData data = new PartitionsData("TopicMock Partition Data");
 		IntStream.range(0, 12)
 			.forEach(i -> data.addPartition(i, i * 1234567L));
 		map.put(KEY0, new Topic(KEY0, TIMESTAMP0, data));

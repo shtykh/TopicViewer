@@ -47,4 +47,11 @@ public class TopicViewerTest {
 				restTemplate.getForEntity("http://localhost:9000/", String.class);
 		Assert.assertEquals(EXPECTED_HOME_RESPONSE_BODY, entity.getBody());
 	}
+
+	@Test
+	public void testEmpty() throws Exception {
+		ResponseEntity<String> entity =
+				restTemplate.getForEntity("http://localhost:9000/topic/stat?name=empty", String.class);
+		Assert.assertTrue(entity.getBody().contains("is empty"));
+	}
 }

@@ -61,7 +61,7 @@ public class TopicReader implements Provider<String, Topic>, ArgsReceiver {
 	private static Topic readFromFile(String name, String timestamp, File file) throws ProviderException {
 		try {
 			CSVParser reader = new CSVParser(new FileReader(file), CSVFormat.DEFAULT);
-			PartitionsData data = new PartitionsData();
+			PartitionsData data = new PartitionsData(name + "_" + timestamp);
 			Topic topic = new Topic(name, timestamp, data);
 			reader.forEach(record -> data.addPartition(
 					Integer.decode(record.get(0).trim()),
