@@ -2,6 +2,7 @@ package shtykh.topic.util.printer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -15,27 +16,31 @@ public abstract class FieldPrinter implements RowPrinter {
 	}
 
 	public Collection<String[]> getFieldRows() throws PrinterException {
-		Collection<String[]> rows = new ArrayList<>();
-		for (String fieldName : fieldNames) {
-			Class clazz = getClass();
-			Field field;
-			Object value;
-			try {
-				field = clazz.getDeclaredField(fieldName);
-				field.setAccessible(true);
-				value = field.get(this);
-			} catch (Exception e) {
-				throw new PrinterException(e);
+		if (isEmpty()) {
+			return Arrays.<String[]>asList(new String[]{this + " ", "is empty"});
+		} else {
+			Collection<String[]> rows = new ArrayList<>();
+			for (String fieldName : fieldNames) {
+				Class clazz = getClass();
+				Field field;
+				Object value;
+				try {
+					field = clazz.getDeclaredField(fieldName);
+					field.setAccessible(true);
+					value = field.get(this);
+				} catch (Exception e) {
+					throw new PrinterException(e);
+				}
+				if (FieldPrinter.class.isAssignableFrom(value.getClass())) {
+					Collection<String[]> rowsOfField = ((FieldPrinter) value).getFieldRows();
+					rows.addAll(rowsOfField);
+				} else {
+					rows.add(new String[]{fieldName, value.toString()});
+				}
+				field.setAccessible(false);
 			}
-			if (FieldPrinter.class.isAssignableFrom(value.getClass())) {
-				Collection<String[]> rowsOfField = ((FieldPrinter) value).getFieldRows();
-				rows.addAll(rowsOfField);
-			} else {
-				rows.add(new String[]{fieldName, value.toString()});
-			}
-			field.setAccessible(false);
+			return rows;
 		}
-		return rows;
 	}
 
 	@Override

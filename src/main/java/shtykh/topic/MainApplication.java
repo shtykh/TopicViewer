@@ -18,6 +18,7 @@ public class MainApplication {
 		try {
 			Object[] classes = new Object[]{
 					TopicViewer.class,
+					//TopicReader.class,
 					CachedTopicReader.class,
 					CommandLineArgs.class,
 					MainApplication.class,
